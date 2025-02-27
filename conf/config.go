@@ -35,6 +35,9 @@ func init() {
 		fmt.Println("yamlFile.Get config err ")
 		panic(err)
 	}
-	yaml.Unmarshal(yamlFile, &Config)
+	err = yaml.Unmarshal(yamlFile, &Config)
+	if err != nil {
+		panic(err)
+	}
 
 }
