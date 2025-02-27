@@ -2,40 +2,39 @@ package config
 
 import (
 	"fmt"
-	"github.com/spf13/viper"
-	"log"
+	"gopkg.in/yaml.v3"
+	"io/ioutil"
 )
 
 type AppConfig struct {
-	AppName    string
-	AppHost    string
-	AppPort    string
-	AppVersion string
+	System system `yaml:"system"`
+	Logger logger `yaml:"logger"`
 }
 
-func InitConf(configFilePath string) (*AppConfig, error) {
-	viper.SetConfigName("conf") // 设置配置文件名（不带扩展名）
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath(configFilePath)
-	err := viper.ReadInConfig()
+type system struct {
+	AppName    string `yaml:"name"`
+	AppHost    string `yaml:"host"`
+	AppPort    string `yaml:"port"`
+	AppVersion string `yaml:"version"`
+	Env        string `yaml:"env"`
+}
+
+type logger struct {
+	Level        string `yaml:"level"`
+	Prefix       string `yaml:"prefix"`
+	Director     string `yaml:"director"`
+	ShowLine     bool   `yaml:"show_line"`
+	LogInConsole bool   `yaml:"log_in_console"`
+}
+
+var Config *AppConfig
+
+func init() {
+	yamlFile, err := ioutil.ReadFile("./conf/conf.yaml")
 	if err != nil {
-		_, ok := err.(viper.ConfigFileNotFoundError)
-		if ok {
-			log.Println("找不到配置文件。。。")
-			return nil, err
-		} else {
-			log.Println("配置文件出错。。。")
-			return nil, err
-		}
+		fmt.Println("yamlFile.Get config err ")
+		panic(err)
 	}
+	yaml.Unmarshal(yamlFile, &Config)
 
-	config := &AppConfig{
-		AppName:    viper.GetString("app.name"),
-		AppHost:    viper.GetString("app.host"),
-		AppPort:    viper.GetString("app.port"),
-		AppVersion: viper.GetString("app.version"),
-	}
-
-	fmt.Println("配置文件加载成功:", config)
-	return config, nil
 }
