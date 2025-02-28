@@ -1,6 +1,7 @@
 package main
 
 import (
+	config "BlockApp/conf"
 	"BlockApp/model"
 	"fmt"
 	"gorm.io/driver/postgres"
@@ -9,8 +10,10 @@ import (
 )
 
 func main() {
-
-	dsn := "host=127.0.0.1 user=postgres password=postgres dbname=BlockApp port=5432 sslmode=disable"
+	pgsqlConfig := config.Config.Pgsql
+	dsn := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+		pgsqlConfig.Host, pgsqlConfig.Username, pgsqlConfig.Password, pgsqlConfig.Database, pgsqlConfig.Port)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("failed to connect database: %v", err)

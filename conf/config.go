@@ -9,6 +9,7 @@ import (
 type AppConfig struct {
 	System system `yaml:"system"`
 	Logger logger `yaml:"logger"`
+	Pgsql  pgsql  `yaml:"pgsql"`
 }
 
 type system struct {
@@ -17,6 +18,14 @@ type system struct {
 	AppPort    string `yaml:"port"`
 	AppVersion string `yaml:"version"`
 	Env        string `yaml:"env"`
+}
+
+type pgsql struct {
+	Host     string `yaml:"host"`
+	Port     string `yaml:"port"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
+	Database string `yaml:"database"`
 }
 
 type logger struct {
