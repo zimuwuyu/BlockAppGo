@@ -12,11 +12,11 @@ const (
 )
 
 type Task struct {
-	ID             int                    `gorm:"column:id;primaryKey"`
-	Name           string                 `gorm:"column:name;comment:'任务名称'"`
-	ModelId        int                    `gorm:"column:model_id;int;not null;comment:'blockModel id'"`
-	TaskState      TaskState              `gorm:"column:task_state;varchar(30);not null;comment:'任务状态'"`
-	UserId         int                    `gorm:"column:user_id;int;not null;comment:'用户id'"`
+	ID             int                    `gorm:"column:id;type:integer;primaryKey"`
+	Name           string                 `gorm:"column:name;type:varchar(30);comment:'任务名称'"`
+	ModelId        int                    `gorm:"column:model_id;type:integer;;not null;comment:'blockModel id'"`
+	TaskState      TaskState              `gorm:"column:task_state;not null;comment:'任务状态'"`
+	UserId         int                    `gorm:"column:user_id;type:integer;not null;comment:'用户id'"`
 	ModelHigh      float32                `gorm:"column:model_high;not null;comment:'模型高度, 指的是模型在最长方向上的高度'"`
 	Step           float32                `gorm:"column:step;not null;default:0.2;comment:'积木堆叠步长'"`
 	BlockSize      float32                `gorm:"column:block_size;not null;default:0.008;comment:'积木大小，长和宽，长款相同'"`
@@ -28,16 +28,24 @@ type Task struct {
 	UsePvVoxel     bool                   `gorm:"column:use_pv_voxel;not null;default:false;comment:'是否使用pyvista的voxelize方法, 否则使用open3d的VoxelGrid方法'"`
 	UsePv3d        bool                   `gorm:"column:use_pv_3d;not null;default:false;comment:'是否使用pyvista绘制3D模型'"`
 	WallThickness  float32                `gorm:"column:wall_thickness;comment:'壁厚度, 在这个厚度以内的积木会被删除, 若为None则为积木厚度的一半'"`
-	ViewSize       []int                  `gorm:"column:view_size;type:text[];comment:'流程图尺寸，显示窗口大小'"`
+	ViewSize       []int                  `gorm:"column:view_size;type:smallint[];comment:'流程图尺寸，显示窗口大小'"`
 	Version        string                 `gorm:"column:version;comment:'task版本信息'"`
 	Extend         map[string]interface{} `gorm:"column:extend;type:json;comment:'扩展字段'" ` // 使用 map 存储动态 JSON 数据
 	CreateTime     string                 `gorm:"column:create_time;type:timestamp(6);default:CURRENT_TIMESTAMP(6)"`
 	UpdateTime     string                 `gorm:"column:update_time;type:timestamp(6);default:CURRENT_TIMESTAMP(6);on_update:CURRENT_TIMESTAMP(6)"`
 }
 
+func (Task) TableName() string {
+	return "task"
+}
+
 type TaskLog struct {
-	ID         int    `gorm:"column:id;primaryKey"`
-	TaskId     int    `gorm:"column:task_id;not null;comment:'任务id'"`
+	ID         int    `gorm:"column:id;type:integer;primaryKey"`
+	TaskId     int    `gorm:"column:task_id;type:integer;not null;comment:'任务id'"`
 	LogType    string `gorm:"column:log_type;default:debug;comment:'日志等级'"`
 	CreateTime string `gorm:"column:create_time;type:timestamp(6);default:CURRENT_TIMESTAMP(6)"`
+}
+
+func (TaskLog) TableName() string {
+	return "task_log"
 }
