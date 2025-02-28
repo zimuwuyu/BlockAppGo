@@ -1,9 +1,5 @@
 package model
 
-import (
-	"time"
-)
-
 type TaskState string
 
 const (
@@ -35,14 +31,13 @@ type Task struct {
 	ViewSize       []int                  `gorm:"column:view_size;type:text[];comment:'流程图尺寸，显示窗口大小'"`
 	Version        string                 `gorm:"column:version;comment:'task版本信息'"`
 	Extend         map[string]interface{} `gorm:"column:extend;type:json;comment:'扩展字段'" ` // 使用 map 存储动态 JSON 数据
-	CreateTime     time.Time              `gorm:"column:create_time;type:datetime(6);default:CURRENT_TIMESTAMP(6)"`
-	UpdateTime     time.Time              `gorm:"column:update_time;type:datetime(6);default:CURRENT_TIMESTAMP(6);on_update:CURRENT_TIMESTAMP(6)"`
+	CreateTime     string                 `gorm:"column:create_time;type:timestamp(6);default:CURRENT_TIMESTAMP(6)"`
+	UpdateTime     string                 `gorm:"column:update_time;type:timestamp(6);default:CURRENT_TIMESTAMP(6);on_update:CURRENT_TIMESTAMP(6)"`
 }
 
 type TaskLog struct {
-	ID         int       `gorm:"column:id;primaryKey"`
-	TaskId     int       `gorm:"column:task_id;not null;comment:'任务id'"`
-	LogType    string    `gorm:"column:log_type;default:debug;comment:'日志等级'"`
-	LogTime    string    `gorm:"column:log_time;type:datetime(6);comment:'任务日志时间'"`
-	CreateTime time.Time `gorm:"column:create_time;type:datetime(6);default:CURRENT_TIMESTAMP(6)"`
+	ID         int    `gorm:"column:id;primaryKey"`
+	TaskId     int    `gorm:"column:task_id;not null;comment:'任务id'"`
+	LogType    string `gorm:"column:log_type;default:debug;comment:'日志等级'"`
+	CreateTime string `gorm:"column:create_time;type:timestamp(6);default:CURRENT_TIMESTAMP(6)"`
 }

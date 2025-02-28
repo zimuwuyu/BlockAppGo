@@ -1,7 +1,5 @@
 package model
 
-import "time"
-
 type ImageType string
 
 const (
@@ -29,6 +27,6 @@ type PictureStorage struct {
 	Url         string    `gorm:"column:url;comment:'存在公共桶的此自动才有值'"`
 	ImageType   ImageType `gorm:"column:image_type;not null;comment:'图片类型'"`
 	StorageType string    `gorm:"column:storage_type;not null;comment:'存储类型'"`
-	CreateTime  time.Time `gorm:"column:create_time;type:datetime(6);default:CURRENT_TIMESTAMP(6)"`
-	UpdateTime  time.Time `gorm:"column:update_time;type:datetime(6);default:CURRENT_TIMESTAMP(6);on_update:CURRENT_TIMESTAMP(6)"`
+	CreateTime  string    `gorm:"column:create_time;type:timestamp(6);default:CURRENT_TIMESTAMP(6)"`
+	UpdateTime  string    `gorm:"column:update_time;type:timestamp(6);default:CURRENT_TIMESTAMP(6);on_update:CURRENT_TIMESTAMP(6)"`
 }
