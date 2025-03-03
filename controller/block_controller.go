@@ -1,8 +1,11 @@
 package controller
 
 import (
+	"BlockApp/db"
+	"BlockApp/model"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 //type IBlockController interface {
@@ -13,23 +16,36 @@ type BlockController struct {
 }
 
 // Block 示例接口
-// @Summary 返回 Block
-// @Description 这个接口返回 "Block!"
+// @Summary 分页返回 BlockModel 数据
+// @Description 这个接口返回分页的 BlockModel 列表
 // @Tags 示例
 // @Produce json
-// @Success 200 {string} string "Block!"
+// @Param page query int false "页码"
+// @Param pageSize query int false "每页数量"
+// @Success 200 {object} []model.BlockModel
 // @Router /blockModel [get]
 func (c *BlockController) Get(ctx *gin.Context) {
-	// 你也可以使用一个结构体
-	var msg struct {
-		Name    string `json:"user"`
-		Message string
-		Number  int
+	var blocks []model.BlockModel
+	// 获取分页参数
+	page, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("pageSize", "10"))
+	// 校验分页参数
+	if page < 1 {
+		page = 1
 	}
-	msg.Name = "Lena"
-	msg.Message = "hey"
-	msg.Number = 123
-	// 注意 msg.Name 在 JSON 中变成了 "user"
-	// 将输出：{"user": "Lena", "Message": "hey", "Number": 123}
-	ctx.JSON(http.StatusOK, msg)
+	if pageSize < 1 {
+		pageSize = 10
+	}
+	// 计算偏移量
+	offset := (page - 1) * pageSize
+
+	// 查询数据库
+	result := db.PgsqlDB.Limit(pageSize).Offset(offset).Find(&blocks)
+	if result.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, blocks)
+
 }

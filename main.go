@@ -2,6 +2,7 @@ package main
 
 import (
 	config "BlockApp/conf"
+	"BlockApp/db"
 	_ "BlockApp/docs"
 	"BlockApp/router"
 	"fmt"
@@ -12,6 +13,7 @@ import (
 func main() {
 	r := router.InitRouter()
 	fmt.Println(config.Config.System)
+	db.InitPgSql()
 	// 加载swagger
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	// 拼接服务地址
