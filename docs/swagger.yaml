@@ -1,0 +1,62 @@
+definitions:
+  model.BlockModel:
+    properties:
+      bucketName:
+        type: string
+      createTime:
+        type: string
+      hot:
+        type: integer
+      id:
+        type: integer
+      introduction:
+        type: string
+      isRecommend:
+        type: boolean
+      isShow:
+        type: boolean
+      modelFile:
+        type: string
+      modelType:
+        type: integer
+      tags:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+      totalCount:
+        type: integer
+      updateTime:
+        type: string
+      url:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /blockModel:
+    get:
+      description: 这个接口返回分页的 BlockModel 列表
+      parameters:
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.BlockModel'
+            type: array
+      summary: 分页返回 BlockModel 数据
+      tags:
+      - 示例
+swagger: "2.0"
