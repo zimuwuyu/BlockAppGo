@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
+	"time"
 )
 
 type AppConfig struct {
@@ -13,11 +14,13 @@ type AppConfig struct {
 }
 
 type system struct {
-	AppName    string `yaml:"name"`
-	AppHost    string `yaml:"host"`
-	AppPort    string `yaml:"port"`
-	AppVersion string `yaml:"version"`
-	Env        string `yaml:"env"`
+	AppName      string        `yaml:"name"`
+	AppHost      string        `yaml:"host"`
+	AppPort      string        `yaml:"port"`
+	AppVersion   string        `yaml:"version"`
+	Env          string        `yaml:"env"`
+	ReadTimeOut  time.Duration `yaml:"readTimeOut"`
+	WriteTimeout time.Duration `yaml:"writeTimeout"`
 }
 
 type pgsql struct {

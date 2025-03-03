@@ -4,6 +4,9 @@ system:
   port: 8888
   version: "1.0.0"
   env: debug
+  readTimeOut: 10s
+  writeTimeout: 10s
+
 
 logger:
   level: info
