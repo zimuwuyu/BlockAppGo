@@ -28,7 +28,7 @@ func (BlockModel) TableName() string {
 
 type BlockModelType struct {
 	ID         int    `gorm:"column:id;primaryKey"`
-	Name       string `gorm:"column:id;type:varchar(30);comment:'类别名字'"`
+	Name       string `gorm:"column:name;type:varchar(30);comment:'类别名字'"`
 	CreateTime string `gorm:"column:create_time;type:timestamp(6);default:CURRENT_TIMESTAMP(6)"`
 	UpdateTime string `gorm:"column:update_time;type:timestamp(6);default:CURRENT_TIMESTAMP(6);on_update:CURRENT_TIMESTAMP(6)"`
 }
