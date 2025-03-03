@@ -15,7 +15,7 @@ import (
 type BlockController struct {
 }
 
-// Block 示例接口
+// Block 接口
 // @Summary 分页返回 BlockModel 数据
 // @Description 这个接口返回分页的 BlockModel 列表
 // @Tags 示例
