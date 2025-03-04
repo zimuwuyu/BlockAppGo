@@ -10,7 +10,7 @@ var (
 )
 
 func InitBlockRoutes(r *gin.Engine) gin.IRoutes {
-	blockModel := r.Group("/blockModel")
-	blockModel.GET("", Block.Get)
+	blockModel := r.Group("/v1")
+	blockModel.GET("/blockModel", Block.GetBlocBModel)
 	return r
 }

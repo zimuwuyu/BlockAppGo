@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/blockModel": {
+        "/v1/blockModel": {
             "get": {
                 "description": "这个接口返回分页的 BlockModel 列表",
                 "produces": [
