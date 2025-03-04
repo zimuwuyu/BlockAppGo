@@ -21,6 +21,7 @@ type system struct {
 	Env          string        `yaml:"env"`
 	ReadTimeOut  time.Duration `yaml:"readTimeOut"`
 	WriteTimeout time.Duration `yaml:"writeTimeout"`
+	JwtSecret    string        `yaml:"jwtSecret"`
 }
 
 type pgsql struct {
@@ -52,4 +53,8 @@ func init() {
 		panic(err)
 	}
 
+}
+
+func (s *system) GetJwtSecret() []byte {
+	return []byte(s.JwtSecret) // 转换为 []byte
 }

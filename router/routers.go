@@ -15,4 +15,5 @@ func InitRouter() *gin.Engine {
 
 func register(router *gin.Engine) {
 	InitBlockRoutes(router)
+	InitUserRoutes(router)
 }

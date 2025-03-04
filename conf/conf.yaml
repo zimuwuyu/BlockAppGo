@@ -6,7 +6,7 @@ system:
   env: debug
   readTimeOut: 10s
   writeTimeout: 10s
-
+  jwtSecret: "sdasfsdgjhkllkadioadhoqaihfo"
 
 logger:
   level: info
