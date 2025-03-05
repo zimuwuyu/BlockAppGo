@@ -32,6 +32,10 @@ func ParseToken(tokenString string) (*CustomClaims, error) {
 
 	// 断言 claims 类型
 	if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {
+		// 显式校验 token 是否过期
+		if claims.ExpiresAt != nil && claims.ExpiresAt.Time.Before(time.Now()) {
+			return nil, fmt.Errorf("token 已过期")
+		}
 		return claims, nil
 	}
 	return nil, fmt.Errorf("无效的 token")
@@ -65,12 +69,13 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 
 // 生成 JWT 令牌
 func GenerateToken(userID string) (string, error) {
+	fmt.Println(config.Config.Jwt)
 	claims := CustomClaims{
 		UserID: userID,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(config.Config.Jwt.TimeOut) * time.Second)), // 过期时间
-			IssuedAt:  jwt.NewNumericDate(time.Now()),                                                             // 签发时间
-			NotBefore: jwt.NewNumericDate(time.Now()),                                                             // 立即生效
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(config.Config.Jwt.TimeOut))), // 过期时间
+			IssuedAt:  jwt.NewNumericDate(time.Now()),                                               // 签发时间
+			NotBefore: jwt.NewNumericDate(time.Now()),                                               // 立即生效
 		},
 	}
 
