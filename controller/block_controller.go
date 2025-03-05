@@ -14,7 +14,7 @@ type BlockController struct {
 // Block 接口
 // @Summary 分页返回 BlockModel 数据
 // @Description 这个接口返回分页的 BlockModel 列表
-// @Tags 示例
+// @Tags Block
 // @Produce json
 // @Param page query int false "页码"
 // @Param pageSize query int false "每页数量"
