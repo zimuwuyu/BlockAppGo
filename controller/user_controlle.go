@@ -23,6 +23,10 @@ type LoginResponse struct {
 	RefreshToken string `json:"refreshToken"`
 }
 
+type RefreshRequest struct {
+	RefreshToken string `json:"refresh_token"`
+}
+
 // UserLogin 用户登录
 // @Summary 用户登录
 // @Description 通过用户名和密码进行登录，并返回 JWT Token
@@ -104,4 +108,42 @@ func (uc *UserController) UserRegister(ctx *gin.Context) {
 
 func (uc *UserController) Create(ctx *gin.Context) {
 	ctx.JSON(http.StatusNotImplemented, gin.H{"error": "Not implemented"})
+}
+
+// User 接口
+// @Summary 刷新token
+// @Description 刷新token
+// @Tags User
+// @Produce json
+// @Param request body RefreshRequest true "刷新token"
+// @Success 200 {object} map[string]string "返回 Token"
+// @Failure 400 {object} map[string]string "请求错误"
+// @Failure 401 {object} map[string]string "无效的 Refresh Token"
+// @Failure 500 {object} map[string]string "服务器错误"
+// @Router /v1/refreshToken [post]
+func (uc *UserController) RefreshToken(c *gin.Context) {
+	var req RefreshRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "请求格式错误"})
+		return
+	}
+
+	// 解析 Refresh Token
+	claims, err := middleware.ParseToken(req.RefreshToken)
+	if err != nil || !claims.IsRefresh {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "无效的 Refresh Token"})
+		return
+	}
+
+	// 生成新的 Access Token 和 Refresh Token
+	newAccessToken, newRefreshToken, err := middleware.GenerateTokens(claims.UserID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "无法生成新令牌"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"access_token":  newAccessToken,
+		"refresh_token": newRefreshToken,
+	})
 }

@@ -8,6 +8,11 @@ definitions:
         example: admin
         type: string
     type: object
+  controller.RefreshRequest:
+    properties:
+      refresh_token:
+        type: string
+    type: object
   model.BlockModel:
     properties:
       bucketName:
@@ -111,6 +116,46 @@ paths:
               type: string
             type: object
       summary: 用户登录
+      tags:
+      - User
+  /v1/refreshToken:
+    post:
+      description: 刷新token
+      parameters:
+      - description: 刷新token
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controller.RefreshRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回 Token
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: 请求错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 无效的 Refresh Token
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 服务器错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: 刷新token
       tags:
       - User
   /v1/register:

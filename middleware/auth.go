@@ -109,33 +109,3 @@ func generateJWT(claims CustomClaims) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(secretKey)
 }
-
-// 刷新 Access Token
-func RefreshToken(c *gin.Context) {
-	var request struct {
-		RefreshToken string `json:"refresh_token"`
-	}
-	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "请求格式错误"})
-		return
-	}
-
-	// 解析 Refresh Token
-	claims, err := ParseToken(request.RefreshToken)
-	if err != nil || !claims.IsRefresh {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "无效的 Refresh Token"})
-		return
-	}
-
-	// 生成新的 Access Token 和 Refresh Token
-	newAccessToken, newRefreshToken, err := GenerateTokens(claims.UserID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "无法生成新令牌"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"access_token":  newAccessToken,
-		"refresh_token": newRefreshToken,
-	})
-}
