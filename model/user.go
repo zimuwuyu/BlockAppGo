@@ -13,8 +13,8 @@ const (
 type User struct {
 	ID          int    `gorm:"column:id;type:integer;primaryKey"`
 	Name        string `gorm:"column:id;varchar(30);not null;comment:'用户名称'"`
-	_PassWord   string `gorm:"column:password;string;not null;comment:'用户密码'"`
-	_Role       Role   `gorm:"column:role;varchar(30);not null;index;comment:'用户角色'"`
+	PassWord    string `gorm:"column:password;string;not null;comment:'用户密码'"`
+	Role        Role   `gorm:"column:role;varchar(30);not null;index;comment:'用户角色'"`
 	PhoneNumber string `gorm:"column:phone_number;varchar(30);comment:'用户电话号码'"`
 	Email       string `gorm:"column:email;varchar(30);comment:'用户邮箱'"`
 	CreateTime  string `gorm:"column:create_time;type:timestamp(6);default:CURRENT_TIMESTAMP(6)"`
