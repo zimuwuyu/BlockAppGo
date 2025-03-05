@@ -1,9 +1,11 @@
 definitions:
-  controller.Creds:
+  controller.LoginRequest:
     properties:
       password:
+        example: "123456"
         type: string
       username:
+        example: admin
         type: string
     type: object
   model.BlockModel:
@@ -41,6 +43,7 @@ definitions:
     type: object
 info:
   contact: {}
+  version: "1.0"
 paths:
   /v1/blockModel:
     get:
@@ -63,6 +66,8 @@ paths:
             items:
               $ref: '#/definitions/model.BlockModel'
             type: array
+      security:
+      - BearerAuth: []
       summary: 分页返回 BlockModel 数据
       tags:
       - Block
@@ -77,7 +82,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/controller.Creds'
+          $ref: '#/definitions/controller.LoginRequest'
       produces:
       - application/json
       responses:
@@ -119,7 +124,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/controller.Creds'
+          $ref: '#/definitions/controller.LoginRequest'
       produces:
       - application/json
       responses:
@@ -144,4 +149,9 @@ paths:
       summary: 用户注册(暂时不开放)
       tags:
       - User
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

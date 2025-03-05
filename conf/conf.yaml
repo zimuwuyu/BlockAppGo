@@ -15,10 +15,15 @@ logger:
   show_line: true
   log_in_console: true
 
-
 pgsql:
   host: "127.0.0.1"
   port: 5432
   username: postgres
   password: postgres
   database: BlockApp
+
+jwt:
+  timeOut: 300s
+  maxRefresh: 1800s
+  realm: BlockApp
+  Key: "$2a$10$3scGg5PO23LZwB5wvWbSneluI1Jhv0I/HZS09D9/2StqlMc2eOIyK"

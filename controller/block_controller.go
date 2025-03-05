@@ -16,6 +16,7 @@ type BlockController struct {
 // @Description 这个接口返回分页的 BlockModel 列表
 // @Tags Block
 // @Produce json
+// @Security BearerAuth
 // @Param page query int false "页码"
 // @Param pageSize query int false "每页数量"
 // @Success 200 {object} []model.BlockModel

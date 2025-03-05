@@ -1,11 +1,17 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "contact": {},
+        "version": "1.0"
     },
     "paths": {
         "/v1/blockModel": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "这个接口返回分页的 BlockModel 列表",
                 "produces": [
                     "application/json"
@@ -61,7 +67,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controller.Creds"
+                            "$ref": "#/definitions/controller.LoginRequest"
                         }
                     }
                 ],
@@ -125,7 +131,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controller.Creds"
+                            "$ref": "#/definitions/controller.LoginRequest"
                         }
                     }
                 ],
@@ -162,14 +168,16 @@
         }
     },
     "definitions": {
-        "controller.Creds": {
+        "controller.LoginRequest": {
             "type": "object",
             "properties": {
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123456"
                 },
                 "username": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "admin"
                 }
             }
         },
@@ -222,6 +230,13 @@
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

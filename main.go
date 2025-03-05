@@ -1,3 +1,8 @@
+// @version 1.0
+// @securityDefinitions.apikey BearerAuth
+// @tokenUrl /v1/login
+// @in header
+// @name Authorization
 package main
 
 import (

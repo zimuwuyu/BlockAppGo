@@ -11,6 +11,7 @@ type AppConfig struct {
 	System system `yaml:"system"`
 	Logger logger `yaml:"logger"`
 	Pgsql  pgsql  `yaml:"pgsql"`
+	Jwt    jwt    `yaml:"jwt"`
 }
 
 type system struct {
@@ -38,6 +39,13 @@ type logger struct {
 	Director     string `yaml:"director"`
 	ShowLine     bool   `yaml:"show_line"`
 	LogInConsole bool   `yaml:"log_in_console"`
+}
+
+type jwt struct {
+	TimeOut    time.Duration `yaml:"timeOut"`
+	MaxRefresh time.Duration `yaml:"maxRefresh"`
+	Realm      string        `yaml:"realm"`
+	Key        string        `yaml:"key"`
 }
 
 var Config *AppConfig
