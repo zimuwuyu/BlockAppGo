@@ -10,7 +10,8 @@ var (
 )
 
 func InitUserRoutes(r *gin.Engine) gin.IRoutes {
-	blockModel := r.Group("/v1")
-	blockModel.POST("/login", User.UserLogin)
+	UserModel := r.Group("/v1")
+	UserModel.POST("/login", User.UserLogin)
+	//UserModel.POST("/register", User.UserRegister)
 	return r
 }
