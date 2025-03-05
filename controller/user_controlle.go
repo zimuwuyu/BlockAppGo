@@ -32,7 +32,8 @@ type LoginRequest struct {
 
 // LoginResponse 登录响应结构体
 type LoginResponse struct {
-	Token string `json:"token"`
+	AccessToken  string `json:"accessToken"`
+	RefreshToken string `json:"refreshToken"`
 }
 
 // UserLogin 用户登录
@@ -66,13 +67,13 @@ func (uc *UserController) UserLogin(ctx *gin.Context) {
 		return
 	}
 	// 生成Token
-	token, err := middleware.GenerateToken(req.Username)
+	accessToken, refreshToken, err := middleware.GenerateTokens(req.Username)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Could not generate token"})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, LoginResponse{Token: token})
+	ctx.JSON(http.StatusOK, LoginResponse{AccessToken: accessToken, RefreshToken: refreshToken})
 }
 
 // UserRegister 用户注册

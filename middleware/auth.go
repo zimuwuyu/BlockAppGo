@@ -6,20 +6,21 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 	"net/http"
+	"strings"
 	"time"
 )
 
 var secretKey = []byte(config.Config.Jwt.Key)
 
 type CustomClaims struct {
-	UserID string `json:"user_id"`
+	UserID    string `json:"user_id"`
+	IsRefresh bool   `json:"is_refresh"`
 	jwt.RegisteredClaims
 }
 
 // 解析 JWT 并验证
 func ParseToken(tokenString string) (*CustomClaims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
-		// 确保使用 HMAC 作为签名方法
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("无效的签名算法: %v", token.Header["alg"])
 		}
@@ -30,21 +31,19 @@ func ParseToken(tokenString string) (*CustomClaims, error) {
 		return nil, err
 	}
 
-	// 断言 claims 类型
+	// 解析成功后，校验是否过期
 	if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {
-		// 显式校验 token 是否过期
 		if claims.ExpiresAt != nil && claims.ExpiresAt.Time.Before(time.Now()) {
 			return nil, fmt.Errorf("token 已过期")
 		}
 		return claims, nil
 	}
+
 	return nil, fmt.Errorf("无效的 token")
 }
 
-// Gin 中间件：验证 JWT
 func JWTAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// 获取 Authorization 头部
 		tokenString := c.GetHeader("Authorization")
 		if tokenString == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "未提供 JWT 令牌"})
@@ -52,41 +51,91 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// 解析 token
-		claims, err := ParseToken(tokenString)
+		claims, err := ParseToken(strings.TrimPrefix(tokenString, "Bearer "))
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "无效的 JWT 令牌"})
 			c.Abort()
 			return
 		}
 
-		// 存储用户信息到上下文
-		c.Set("user_id", claims.UserID)
+		if claims.IsRefresh {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "不能使用 Refresh Token 访问接口"})
+			c.Abort()
+			return
+		}
 
+		c.Set("user_id", claims.UserID)
 		c.Next()
 	}
 }
 
-// 生成 JWT 令牌
-func GenerateToken(userID string) (string, error) {
-	fmt.Println(config.Config.Jwt)
-	claims := CustomClaims{
-		UserID: userID,
+// 生成 JWT 令牌（包含 Access Token 和 Refresh Token）
+func GenerateTokens(userID string) (accessToken string, refreshToken string, err error) {
+	// Access Token 30分钟有效
+	accessClaims := CustomClaims{
+		UserID:    userID,
+		IsRefresh: false, // 这是访问令牌
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(config.Config.Jwt.TimeOut))), // 过期时间
-			IssuedAt:  jwt.NewNumericDate(time.Now()),                                               // 签发时间
-			NotBefore: jwt.NewNumericDate(time.Now()),                                               // 立即生效
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(30 * time.Minute)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			NotBefore: jwt.NewNumericDate(time.Now()),
 		},
 	}
-
-	// 生成 token
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	// 使用密钥签名
-	tokenString, err := token.SignedString(secretKey)
+	accessToken, err = generateJWT(accessClaims)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
-	return tokenString, nil
+	// Refresh Token 7天有效
+	refreshClaims := CustomClaims{
+		UserID:    userID,
+		IsRefresh: true, // 这是刷新令牌
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour)), // 7天过期
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			NotBefore: jwt.NewNumericDate(time.Now()),
+		},
+	}
+	refreshToken, err = generateJWT(refreshClaims)
+	if err != nil {
+		return "", "", err
+	}
+
+	return accessToken, refreshToken, nil
+}
+
+// 生成 JWT Token
+func generateJWT(claims CustomClaims) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString(secretKey)
+}
+
+// 刷新 Access Token
+func RefreshToken(c *gin.Context) {
+	var request struct {
+		RefreshToken string `json:"refresh_token"`
+	}
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "请求格式错误"})
+		return
+	}
+
+	// 解析 Refresh Token
+	claims, err := ParseToken(request.RefreshToken)
+	if err != nil || !claims.IsRefresh {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "无效的 Refresh Token"})
+		return
+	}
+
+	// 生成新的 Access Token 和 Refresh Token
+	newAccessToken, newRefreshToken, err := GenerateTokens(claims.UserID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "无法生成新令牌"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"access_token":  newAccessToken,
+		"refresh_token": newRefreshToken,
+	})
 }
