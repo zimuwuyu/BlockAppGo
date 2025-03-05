@@ -1,28 +1,15 @@
 package controller
 
 import (
-	config "BlockApp/conf"
 	"BlockApp/db"
 	"BlockApp/middleware"
 	"BlockApp/model"
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
-	"time"
 )
 
 type UserController struct {
-}
-
-// 生成JWT Token
-func generateToken(username string) (string, error) {
-	claims := jwt.MapClaims{
-		"username": username,
-		"exp":      time.Now().Add(time.Hour * 2).Unix(), // 2小时过期
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(config.Config.System.GetJwtSecret())
 }
 
 type LoginRequest struct {
