@@ -3,6 +3,8 @@ package middleware
 import (
 	"gorm.io/driver/postgres"
 	"log"
+	"os"
+	"path/filepath"
 
 	"github.com/casbin/casbin/v2"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
@@ -26,7 +28,12 @@ func NewCasbinService(dsn string) *CasbinService {
 	}
 
 	// 使用基础模型 model.conf（见下）
-	enforcer, err := casbin.NewEnforcer("config/casbin_model.conf", adapter)
+	cwd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+	modelPath := filepath.Join(cwd, "conf", "keymatch2_model.conf")
+	enforcer, err := casbin.NewEnforcer(modelPath, adapter)
 	if err != nil {
 		log.Fatalf("初始化 Casbin Enforcer 失败: %v", err)
 	}

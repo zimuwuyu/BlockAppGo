@@ -19,8 +19,21 @@ type CustomClaims struct {
 	jwt.RegisteredClaims
 }
 
+var whiteList = []string{"/swagger/index.html", "/health", "/login"}
+
 func CasbinMiddleware(srv *CasbinService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+
+		path := ctx.Request.URL.Path
+
+		// 免验证白名单路径直接放行
+		for _, p := range whiteList {
+			if p == path {
+				ctx.Next()
+				return
+			}
+		}
+
 		username := ctx.Query("username")
 		if username == "" {
 			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "缺少用户名"})
