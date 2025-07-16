@@ -9,6 +9,7 @@ import (
 	config "BlockApp/conf"
 	"BlockApp/db"
 	_ "BlockApp/docs"
+	"BlockApp/middleware"
 	"BlockApp/router"
 	"context"
 	"fmt"
@@ -25,6 +26,12 @@ func main() {
 	r := router.InitRouter()
 	fmt.Println(config.Config.System)
 	db.InitPgSql()
+	pgsqlConfig := config.Config.Pgsql
+	dsn := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+		pgsqlConfig.Host, pgsqlConfig.Username, pgsqlConfig.Password, pgsqlConfig.Database, pgsqlConfig.Port)
+	casbinSrv := middleware.NewCasbinService(dsn)
+	r.Use(middleware.CasbinMiddleware(casbinSrv))
 	// 加载swagger
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	// 拼接服务地址

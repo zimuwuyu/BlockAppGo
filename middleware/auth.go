@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -16,6 +17,33 @@ type CustomClaims struct {
 	UserID    string `json:"user_id"`
 	IsRefresh bool   `json:"is_refresh"`
 	jwt.RegisteredClaims
+}
+
+func CasbinMiddleware(srv *CasbinService) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		username := ctx.Query("username")
+		if username == "" {
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "缺少用户名"})
+			return
+		}
+
+		obj := ctx.Request.URL.Path
+		act := ctx.Request.Method
+
+		ok, err := srv.Enforcer.Enforce(username, obj, act)
+		if err != nil {
+			log.Printf("Enforce 出错: %v", err)
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "权限检查错误"})
+			return
+		}
+
+		if !ok {
+			ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "没有访问权限"})
+			return
+		}
+
+		ctx.Next()
+	}
 }
 
 // 解析 JWT 并验证
