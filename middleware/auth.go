@@ -19,7 +19,11 @@ type CustomClaims struct {
 	jwt.RegisteredClaims
 }
 
-var whiteList = []string{"/swagger/index.html", "/health", "/login"}
+var whiteList = []string{
+	"/swagger",
+	"/health",
+	"/login",
+}
 
 func CasbinMiddleware(srv *CasbinService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -27,8 +31,8 @@ func CasbinMiddleware(srv *CasbinService) gin.HandlerFunc {
 		path := ctx.Request.URL.Path
 
 		// 免验证白名单路径直接放行
-		for _, p := range whiteList {
-			if p == path {
+		for _, prefix := range whiteList {
+			if strings.HasPrefix(path, prefix) {
 				ctx.Next()
 				return
 			}

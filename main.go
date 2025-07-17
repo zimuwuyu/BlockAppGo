@@ -1,8 +1,3 @@
-// @version 1.0
-// @securityDefinitions.apikey BearerAuth
-// @tokenUrl /v1/login
-// @in header
-// @name Authorization
 package main
 
 import (
@@ -26,6 +21,7 @@ func main() {
 	r := router.InitRouter()
 	fmt.Println(config.Config.System)
 	db.InitPgSql()
+	// TODO Casbin optimization later
 	pgsqlConfig := config.Config.Pgsql
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",

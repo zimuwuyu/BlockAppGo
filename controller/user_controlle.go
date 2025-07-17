@@ -30,6 +30,7 @@ type RefreshRequest struct {
 // UserLogin 用户登录
 // @Summary 用户登录
 // @Description 通过用户名和密码进行登录，并返回 JWT Token
+// @Security BasicAuth
 // @Tags User
 // @Accept json
 // @Produce json

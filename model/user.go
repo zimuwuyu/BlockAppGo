@@ -8,6 +8,7 @@ const (
 	ViewerRole     Role = "VIEWER"
 	SuperAdminRole Role = "SUPERADMIN"
 	SchedulerRole  Role = "SCHEDULER"
+	VipRole        Role = "VIP"
 )
 
 type User struct {

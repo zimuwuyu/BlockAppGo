@@ -20,7 +20,16 @@ func main() {
 	}
 
 	// 自动迁移：根据结构体生成数据表
-	if err := db.AutoMigrate(&model.User{}, model.BlockModel{}, model.BlockModelType{}, model.PictureStorage{}, model.Task{}, model.TaskLog{}, model.UserFeedback{}); err != nil {
+	if err := db.AutoMigrate(
+		&model.User{},
+		model.BlockModel{},
+		model.BlockModelType{},
+		model.PictureStorage{},
+		model.Task{},
+		model.TaskLog{},
+		model.UserFeedback{},
+		model.CasbinRule{},
+	); err != nil {
 		log.Fatalf("failed to migrate database: %v", err)
 	}
 
